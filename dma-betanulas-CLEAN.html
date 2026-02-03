@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMA Mentor Akadémia - 90 Napos Expedíció</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Titillium+Web:wght@400;600;700;900&display=swap');
+        
+        :root {
+            --primary: #FF6B35;
+            --secondary: #4169E1;
+            --bg: #1a2940;
+            --surface: rgba(65, 105, 225, 0.15);
+            --text: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border: rgba(65, 105, 225, 0.3);
+            --accent: #FFD23F;
+            --success: #06D6A0;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #1a2940 0%, #0d1621 100%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        body::after {
+            content: 'DMA';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 25vw;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.015);
+            pointer-events: none;
+            z-index: 0;
+            font-family: 'Titillium Web', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a2940 0%, #0d1621 100%);
+            border-bottom: 3px solid var(--primary);
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #FFFFFF;
+            font-family: 'Titillium Web', sans-serif;
+            text-shadow: 3px 3px 0px rgba(150, 150, 150, 0.5),
+                         6px 6px 0px rgba(100, 100, 100, 0.3);
+            text-transform: uppercase;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-family: 'Titillium Web', sans-serif;
+            color: #FFFFFF;
+            text-transform: uppercase;
+        }
+        
+        .progress-overview {
+            background: rgba(65, 105, 225, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(65, 105, 225, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            color: white;
+            box-shadow: 0 10px 40px rgba(0, 78, 137, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(65, 105, 225, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(65, 105, 225, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #FFFFFF;
+            font-family: 'Titillium Web', sans-serif;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .progress-bar-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            height: 40px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success) 0%, var(--accent) 100%);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-weight: 700;
+            transition: width 0.5s ease;
+        }
+        
+        /* Accordion Months */
+        .months-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .month-accordion-item {
+            background: rgba(65, 105, 225, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(65, 105, 225, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .month-accordion-header {
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        
+        .month-accordion-header:hover {
+            background: rgba(65, 105, 225, 0.15);
+        }
+        
+        .month-accordion-header:active {
+            transform: scale(0.98);
+        }
+        
+        .month-accordion-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+        }
+        
+        .accordion-arrow {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        
+        .accordion-arrow.open {
+            transform: rotate(180deg);
+        }
+        
+        .month-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease;
+            padding: 0 2rem;
+        }
+        
+        .month-accordion-content.open {
+            max-height: 15000px;
+            padding: 2rem;
+        }
+        
+        /* Days Grid */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .day-card {
+            background: rgba(65, 105, 225, 0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .day-card:hover:not(.locked) {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(65, 105, 225, 0.4);
+        }
+        
+        .day-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.3);
+        }
+        
+        .day-number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #FFFFFF;
+            margin-bottom: 0.5rem;
+        }
+        
+        .day-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .status-badge.locked {
+            background: linear-gradient(135deg, #ff4757 0%, #c23616 100%);
+            color: white;
+        }
+        
+        .status-badge.available {
+            background: linear-gradient(135deg, #06d6a0 0%, #00b894 100%);
+            color: #1a2940;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-badge.completed {
+            background: linear-gradient(135deg, #ffd63f 0%, #f6b93b 100%);
+            color: #1a2940;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Tasks */
+        .tasks-list {
+            margin-top: 1.5rem;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .task-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover .task-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .task-checkbox:hover {
+            transform: scale(1.3);
+            border-color: var(--accent);
+        }
+        
+        .task-checkbox.checked {
+            background: linear-gradient(135deg, #06d6a0 0%, #00b894 100%);
+            border-color: #06d6a0;
+            animation: checkPulse 0.4s ease;
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        @keyframes checkPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+        
+        .task-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Button */
+        .btn-primary {
+            background: linear-gradient(135deg, #FFB3BA 0%, #FFCCD5 100%);
+            color: #2d3436;
+            border: 1px solid rgba(255, 179, 186, 0.5);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 179, 186, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 179, 186, 0.6);
+            background: linear-gradient(135deg, #FFC3CA 0%, #FFDDE5 100%);
+        }
+        
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--border);
+        }
+        
+        .question {
+            margin-bottom: 2rem;
+        }
+        
+        .question textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .progress-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>DMA MENTOR AKADÉMIA</h1>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-weight: 700; color: #FFFFFF;">Betanuló: <span id="userName">Új Munkatárs</span></div>
+                <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.3rem;">Kezdés dátuma: <span id="startDate">2026.02.02</span></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+            <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; position: relative; z-index: 1; text-transform: uppercase;">Az Utad Előrehaladása</h2>
+            <p style="opacity: 0.9; position: relative; z-index: 1;">Lépésről lépésre haladunk a teljes céges rendszer megismerése felé.</p>
+            
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="completedDays">0</div>
+                    <div class="stat-label">Teljesített Nap/Hét</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDays">90</div>
+                    <div class="stat-label">Összes Nap</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><span id="progressPercent">0</span>%</div>
+                    <div class="stat-label">Teljesítve</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="averageScore">-</div>
+                    <div class="stat-label">Átlag Teszt Eredmény</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="mainProgressBar" style="width: 0%;">
+                    <span id="progressText">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accordion Months -->
+        <div class="months-accordion">
+            <!-- Month 1 -->
+            <div class="month-accordion-item">
+                <div class="month-accordion-header" onclick="toggleMonth('month1')">
+                    <h2>1. HÓNAP (Napok 1-30)</h2>
+                    <span class="accordion-arrow" id="month1-arrow">▼</span>
+                </div>
+                <div class="month-accordion-content" id="month1-content">
+                    <div class="days-grid" id="month1Grid"></div>
+                </div>
+            </div>
+
+            <!-- Month 2 -->
+            <div class="month-accordion-item">
+                <div class="month-accordion-header" onclick="toggleMonth('month2')">
+                    <h2>2. HÓNAP (Hét 5-8)</h2>
+                    <span class="accordion-arrow" id="month2-arrow">▼</span>
+                </div>
+                <div class="month-accordion-content" id="month2-content">
+                    <div class="days-grid" id="month2Grid"></div>
+                </div>
+            </div>
+
+            <!-- Month 3 -->
+            <div class="month-accordion-item">
+                <div class="month-accordion-header" onclick="toggleMonth('month3')">
+                    <h2>3. HÓNAP (Hét 9-12)</h2>
+                    <span class="accordion-arrow" id="month3-arrow">▼</span>
+                </div>
+                <div class="month-accordion-content" id="month3-content">
+                    <div class="days-grid" id="month3Grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div class="modal" id="quizModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Napi Teszt</h2>
+            <div id="quizContent"></div>
+            <button class="btn-primary" onclick="submitQuiz()">Teszt Beküldése</button>
+            <button class="btn-primary" onclick="closeQuiz()" style="background: rgba(255,255,255,0.1); margin-top: 1rem;">Bezárás</button>
+        </div>
+    </div>
+
+    <script>
+        // User progress
+        let userProgress = {
+            completedDays: [],
+            scores: {}
+        };
+
+        // Program data
+        const programData = {
+            month1: [],
+            month2: [],
+            month3: []
+        };
+
+        let currentQuizDay = null;
+        let currentQuizIndex = null;
+        let currentQuizMonth = null;
+
+        // Initialize Month 1 (Days 1-30)
+        function initMonth1() {
+            for (let day = 1; day <= 30; day++) {
+                programData.month1.push({
+                    day: day,
+                    title: `${day}. NAP - Intenzív Tanulás`,
+                    tasks: [
+                        { type: 'document', title: `DMA Elv ${day} elolvasása`, desc: 'Dokumentum megtekintése' },
+                        { type: 'video', title: `Bemutató Videó ${day}`, desc: 'Webinár / Akadémia megtekintése' }
+                    ],
+                    quiz: [
+                        { question: `Fogalmazd meg a(z) ${day}. nap lényegét saját szavaiddal.`, type: 'text' },
+                        { question: `Mi volt a legfontosabb felismerésed ma?`, type: 'text' }
+                    ]
+                });
+            }
+        }
+
+        // Initialize Month 2 (Weeks 5-8)
+        function initMonth2() {
+            for (let week = 5; week <= 8; week++) {
+                programData.month2.push({
+                    week: `${week}. HÉT`,
+                    title: `${week}. HÉT - Heti Kihívás`,
+                    tasks: [
+                        { type: 'document', title: `Heti összefoglaló ${week}`, desc: 'Dokumentum megtekintése' },
+                        { type: 'video', title: `Heti webinár ${week}`, desc: 'Webinár / Akadémia megtekintése' }
+                    ],
+                    quiz: [
+                        { question: `Milyen tapasztalatokat szereztél a ${week}. héten?`, type: 'text' },
+                        { question: `Mit alkalmaztál a gyakorlatban?`, type: 'text' }
+                    ]
+                });
+            }
+        }
+
+        // Initialize Month 3 (Weeks 9-12)
+        function initMonth3() {
+            for (let week = 9; week <= 12; week++) {
+                programData.month3.push({
+                    week: `${week}. HÉT`,
+                    title: `${week}. HÉT - Gyakorlati Mesterség`,
+                    tasks: [
+                        { type: 'document', title: `Gyakorlati útmutató ${week}`, desc: 'Dokumentum megtekintése' },
+                        { type: 'video', title: `Mesterség videó ${week}`, desc: 'Webinár / Akadémia megtekintése' }
+                    ],
+                    quiz: [
+                        { question: `Milyen mesterséget sajátítottál el a ${week}. héten?`, type: 'text' },
+                        { question: `Hogyan fogod alkalmazni?`, type: 'text' }
+                    ]
+                });
+            }
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('dma-progress');
+            if (saved) {
+                userProgress = JSON.parse(saved);
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('dma-progress', JSON.stringify(userProgress));
+            updateProgressDisplay();
+        }
+
+        // Check if card is locked
+        function isCardLocked(month, index) {
+            // 1. HÓNAP: Csak az 1. nap nyitva, többi sorban
+            if (month === 'month1') {
+                if (index === 0) return false;
+                const prevDayId = `month1-day-${index - 1}`;
+                return !userProgress.completedDays.includes(prevDayId);
+            }
+            
+            // 2. HÓNAP: Zárva amíg az 1. hónap utolsó napja nincs kész
+            if (month === 'month2') {
+                const lastMonth1 = 'month1-day-29';
+                if (!userProgress.completedDays.includes(lastMonth1)) return true;
+                if (index === 0) return false;
+                const prevWeekId = `month2-week-${index - 1}`;
+                return !userProgress.completedDays.includes(prevWeekId);
+            }
+            
+            // 3. HÓNAP: Zárva amíg a 2. hónap utolsó hete nincs kész
+            if (month === 'month3') {
+                const lastMonth2 = 'month2-week-3';
+                if (!userProgress.completedDays.includes(lastMonth2)) return true;
+                if (index === 0) return false;
+                const prevWeekId = `month3-week-${index - 1}`;
+                return !userProgress.completedDays.includes(prevWeekId);
+            }
+            
+            return false;
+        }
+
+        // Render day card
+        function renderDayCard(data, index, month) {
+            const dayId = `${month}-${data.day ? 'day' : 'week'}-${index}`;
+            const isCompleted = userProgress.completedDays.includes(dayId);
+            const isLocked = isCardLocked(month, index);
+            const isAvailable = !isLocked && !isCompleted;
+            
+            let statusBadge = '';
+            if (isLocked) {
+                statusBadge = '<span class="status-badge locked">Zárva</span>';
+            } else if (isAvailable) {
+                statusBadge = '<span class="status-badge available">Nyitva</span>';
+            } else if (isCompleted) {
+                statusBadge = '<span class="status-badge completed">Teljesítve</span>';
+            }
+            
+            const card = document.createElement('div');
+            card.className = `day-card ${isLocked ? 'locked' : ''}`;
+            
+            const tasksHtml = data.tasks.map((task, i) => `
+                <div class="task-item">
+                    <span class="task-icon">${task.type === 'document' ? '📄' : '🎥'}</span>
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-desc">${task.desc}</div>
+                    </div>
+                    <div class="task-checkbox" onclick="toggleTask('${dayId}-${i}')"></div>
+                </div>
+            `).join('');
+            
+            card.innerHTML = `
+                ${statusBadge}
+                <div class="day-number">${data.day || data.week}</div>
+                <div class="day-title">${data.title}</div>
+                <div class="tasks-list">${tasksHtml}</div>
+                <button class="btn-primary" onclick="startQuiz('${dayId}', ${index}, '${month}')" ${isLocked ? 'disabled' : ''}>
+                    Teszt Indítása
+                </button>
+            `;
+            
+            return card;
+        }
+
+        // Render all days
+        function renderAllDays() {
+            const month1Grid = document.getElementById('month1Grid');
+            const month2Grid = document.getElementById('month2Grid');
+            const month3Grid = document.getElementById('month3Grid');
+            
+            month1Grid.innerHTML = '';
+            month2Grid.innerHTML = '';
+            month3Grid.innerHTML = '';
+            
+            programData.month1.forEach((day, i) => {
+                month1Grid.appendChild(renderDayCard(day, i, 'month1'));
+            });
+            
+            programData.month2.forEach((week, i) => {
+                month2Grid.appendChild(renderDayCard(week, i, 'month2'));
+            });
+            
+            programData.month3.forEach((week, i) => {
+                month3Grid.appendChild(renderDayCard(week, i, 'month3'));
+            });
+        }
+
+        // Toggle month accordion
+        function toggleMonth(monthId) {
+            const content = document.getElementById(monthId + '-content');
+            const arrow = document.getElementById(monthId + '-arrow');
+            
+            content.classList.toggle('open');
+            arrow.classList.toggle('open');
+        }
+
+        // Toggle task checkbox
+        function toggleTask(taskId) {
+            event.target.classList.toggle('checked');
+        }
+
+        // Start quiz
+        function startQuiz(dayId, index, month) {
+            if (isCardLocked(month, index)) {
+                alert('Ez a nap/hét még zárva van! Először teljesítsd az előző feladatokat.');
+                return;
+            }
+            
+            const data = month === 'month1' ? programData.month1[index] :
+                        month === 'month2' ? programData.month2[index] :
+                        programData.month3[index];
+            
+            currentQuizDay = dayId;
+            currentQuizIndex = index;
+            currentQuizMonth = month;
+            
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = data.quiz.map((q, i) => `
+                <div class="question">
+                    <h3>${i + 1}. ${q.question}</h3>
+                    <textarea id="answer-${i}" placeholder="Írd ide a válaszod..."></textarea>
+                </div>
+            `).join('');
+            
+            document.getElementById('quizModal').classList.add('active');
+        }
+
+        // Submit quiz
+        function submitQuiz() {
+            if (!userProgress.completedDays.includes(currentQuizDay)) {
+                userProgress.completedDays.push(currentQuizDay);
+                userProgress.scores[currentQuizDay] = 100;
+            }
+            saveProgress();
+            closeQuiz();
+            renderAllDays();
+        }
+
+        // Close quiz
+        function closeQuiz() {
+            document.getElementById('quizModal').classList.remove('active');
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            const completed = userProgress.completedDays.length;
+            const total = 90;
+            const percent = Math.round((completed / total) * 100);
+            
+            document.getElementById('completedDays').textContent = completed;
+            document.getElementById('progressPercent').textContent = percent;
+            document.getElementById('progressText').textContent = percent + '%';
+            document.getElementById('mainProgressBar').style.width = percent + '%';
+            
+            const scores = Object.values(userProgress.scores);
+            const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : '-';
+            document.getElementById('averageScore').textContent = avgScore === '-' ? '-' : avgScore + '%';
+        }
+
+        // Initialize
+        window.onload = function() {
+            initMonth1();
+            initMonth2();
+            initMonth3();
+            loadProgress();
+            renderAllDays();
+            updateProgressDisplay();
+        };
+    </script>
+</body>
+</html>
